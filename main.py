@@ -9,12 +9,14 @@ app = FastAPI(title="Kokoushuoneiden varausjärjestelmä")
 @app.post("/reservations/", response_model=Reservation, status_code=status.HTTP_201_CREATED)
 def create_reservation(reservation: Reservation):
     # Tarkistetaan päällekkäisyys ennen tallennusta
-    if database.check_overlap(reservation.room_name, reservation.start_time, reservation.end_time):
+    try:
+        saved_reservation = database.add_reservation_safe(reservation)
+        return saved_reservation
+    except ValueError:
         raise HTTPException(
             status_code=400, 
             detail=f"Huone {reservation.room_name} on jo varattu kyseisenä aikana."
-        )
-    return database.add_reservation(reservation)
+        ) 
 
 @app.get("/reservations/", response_model=List[Reservation])
 def read_reservations(room_name: str = None):
