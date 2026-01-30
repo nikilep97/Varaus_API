@@ -1,6 +1,10 @@
+import sys
+import os
+
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 import requests
 import threading
-import time
 from datetime import datetime, timedelta, timezone
 
 BASE_URL = "http://localhost:8000"
